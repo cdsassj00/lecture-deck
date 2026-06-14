@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>강의안 템플릿</title>
+<!--
+  사용법: 이 파일을 결과 경로로 복사한 뒤, <section class="slide"> 들을 주제에 맞게 채운다.
+  CSS는 손대지 말고 그대로 둔다(디자인 일관성). 아래 슬라이드들은 레이아웃 예시이며,
+  필요한 것만 골라 복제·편집하고 나머지는 지운다. 캔버스는 1280x720(16:9) 고정.
+-->
+<style>
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap");
+:root{
+  --paper:#f8f4ed; --paper2:#fbf8f1; --band:#efe8d7; --band2:#e7dcc6;
+  --dark:#1a130f; --ink:#211913; --ink2:#473d33; --muted:#8c8275;
+  --rust:#bf571d; --rust2:#9c440f; --gold:#c98a3a; --line:#ddd1ba; --line2:#cabb9c;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:#cfc8ba;font-family:Pretendard,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;}
+.deck{display:flex;flex-direction:column;align-items:center;gap:22px;padding:22px 0 40px;}
+.slide{position:relative;width:1280px;height:720px;background:var(--paper);overflow:hidden;box-shadow:0 10px 34px rgba(0,0,0,.22);}
+h1,h2,h3,h4,p,ul,ol,li{margin:0;padding:0;}
+
+/* 머리글: 솔리드 다크 마스트헤드 (그림자/그라데이션 금지) */
+.hdr{position:absolute;top:0;left:0;right:0;height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 46px;background:var(--dark);z-index:3;}
+.hdr .ht{font-size:12.5px;font-weight:700;color:#f3ede2;letter-spacing:.2px;}
+.hdr .ht span{color:rgba(243,237,226,.42);font-weight:600;letter-spacing:1px;font-size:10px;margin-left:7px;}
+.hdr .hr{font-size:10.5px;font-weight:600;letter-spacing:1.2px;color:rgba(243,237,226,.55);}
+
+.stage{position:absolute;top:44px;left:0;right:0;bottom:0;padding:26px 50px 38px;display:flex;flex-direction:column;}
+.crumb{font-size:14px;font-weight:600;color:var(--rust);letter-spacing:.3px;margin-bottom:6px;}
+.atitle{font-family:"Noto Serif KR",serif;font-weight:700;font-size:28px;line-height:1.28;color:#13100c;letter-spacing:-.4px;}
+.atitle .lbl{color:var(--rust2);}
+.atitle .sub{font-weight:500;color:#3a322a;}
+.titlerule{height:0;border-bottom:1.5px solid var(--line2);margin:14px 0 0;}
+
+.body{flex:1;min-height:0;display:grid;gap:26px;padding-top:18px;}
+.split{grid-template-columns:1fr 1fr;}
+.split-l{grid-template-columns:1.08fr .92fr;}
+.split-r{grid-template-columns:.9fr 1.1fr;}
+.colflow{display:flex;flex-direction:column;min-height:0;}
+
+/* 인트로 설명문(합니다체) */
+.lead{font-size:16.5px;line-height:1.82;color:var(--ink);font-weight:400;}
+.lead b{font-weight:700;color:#13100c;}
+.lead .hl{color:var(--rust2);font-weight:700;}
+
+/* 번호 개념 정의 — 박스 그리드 대신 이것을 쓴다 */
+.concepts{display:flex;flex-direction:column;}
+.concepts.fill{flex:1;justify-content:flex-start;}          /* 칼럼 높이를 균등 분배해 채움 */
+.concepts.fill .concept{flex:1;align-items:center;}
+.concept{padding:16px 0 17px;border-bottom:1px solid var(--line);display:flex;gap:16px;}
+.concept:first-child{padding-top:5px;}
+.concept .no{flex:0 0 auto;font-family:"Noto Serif KR",serif;font-size:22px;font-weight:700;color:var(--rust);line-height:1.25;width:30px;}
+.concept .cbody{flex:1;}
+.concept .cbody .cn{font-size:17.5px;font-weight:700;color:#15100c;line-height:1.3;}
+.concept .cbody .cn .en{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.6px;margin-left:8px;}
+.concept .cbody p{font-size:15px;line-height:1.7;color:var(--ink2);margin-top:6px;font-weight:400;}
+.concept .cbody p b{color:#2a231c;font-weight:700;}
+
+/* 하단 정리/캡션 바 — 슬로건 금지, 사실 설명만 */
+.note{margin-top:auto;display:flex;gap:16px;align-items:flex-start;padding:16px 20px;background:var(--band);border-left:3px solid var(--rust);border-radius:0 3px 3px 0;}
+.note .nl{flex:0 0 auto;font-size:12px;font-weight:700;letter-spacing:1px;color:var(--rust2);padding-top:2px;}
+.note p{font-size:15px;line-height:1.66;color:var(--ink);font-weight:400;}
+.note p b{font-weight:700;color:var(--rust2);}
+.srcline{position:absolute;left:50px;bottom:15px;font-size:11px;color:var(--muted);font-weight:400;}
+.pageno{position:absolute;right:30px;bottom:13px;font-size:13.5px;font-weight:700;color:var(--rust);}
+
+/* 표 */
+table.grid{width:100%;border-collapse:collapse;font-size:13.8px;}
+table.grid th{background:var(--dark);color:#f1ebe0;font-weight:700;font-size:13px;padding:9px 12px;text-align:left;}
+table.grid td{padding:9.5px 12px;border-bottom:1px solid var(--line);color:var(--ink2);vertical-align:top;line-height:1.5;}
+table.grid tr:nth-child(even) td{background:rgba(231,220,198,.36);}
+table.grid td b{color:#1c1610;font-weight:700;}
+.grp td{background:var(--band2)!important;color:var(--rust2);font-weight:700;font-size:13px;letter-spacing:.5px;}
+table.grid.tight{font-size:13px;}
+table.grid.tight th,table.grid.tight td{padding:6.5px 12px;}
+table.grid.tight td{line-height:1.45;}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:3px;white-space:nowrap;}
+.pill.soft{background:#eef1e9;color:#3a5240;}
+.pill.force{background:#34190f;color:#ffcfa8;}
+
+/* === 도식 === */
+.figcap{font-size:12px;font-weight:700;letter-spacing:1px;color:var(--muted);margin-bottom:16px;text-transform:uppercase;}
+.figwrap{display:flex;flex-direction:column;justify-content:center;min-height:0;height:100%;}
+.figwrap.flow .veri{flex:1;justify-content:space-between;}  /* 5단 이상 흐름만 채우기. 항목 3개 이하면 .flow 빼기 */
+
+/* 가로 타임라인 */
+.lineage{display:flex;align-items:stretch;}
+.lineage .ln{flex:1;text-align:center;padding:0 10px;position:relative;}
+.lineage .ln .dot{width:17px;height:17px;border-radius:50%;background:var(--paper);border:4px solid var(--rust);margin:0 auto 16px;position:relative;z-index:2;}
+.lineage .ln.hot .dot{background:var(--rust);}
+.lineage .ln::before{content:"";position:absolute;top:8px;left:0;right:0;height:2px;background:var(--line2);z-index:1;}
+.lineage .ln:first-child::before{left:50%;}.lineage .ln:last-child::before{right:50%;}
+.lineage .ln .yr{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:5px;}
+.lineage .ln .tm{font-size:16px;font-weight:700;color:#15100c;line-height:1.25;margin-bottom:8px;}
+.lineage .ln p{font-size:13.5px;line-height:1.5;color:var(--ink2);}
+
+/* 2계층 스택(대비) */
+.layer2{display:flex;flex-direction:column;gap:15px;}
+.layer2 .lay{border-radius:6px;padding:21px 24px;}
+.layer2 .lay.top{background:var(--band);border:1.5px solid var(--line2);}
+.layer2 .lay.bot{background:var(--dark);color:#efe7da;}
+.layer2 .lay .lh{font-size:17.5px;font-weight:700;margin-bottom:6px;}
+.layer2 .lay.top .lh{color:#15100c;}
+.layer2 .lay .lt{font-size:12.5px;font-weight:600;color:var(--rust);letter-spacing:.5px;margin-bottom:9px;}
+.layer2 .lay.bot .lt{color:var(--gold);}
+.layer2 .lay p{font-size:14px;line-height:1.6;}
+.layer2 .lay.top p{color:var(--ink2);}.layer2 .lay.bot p{color:#cabfb0;}
+.layer2 .conn{text-align:center;color:var(--muted);font-size:13px;font-weight:600;}
+
+/* 순서 흐름 도식(반복 포함) */
+.loop{display:flex;flex-direction:column;gap:13px;}
+.loop .lp{display:flex;align-items:center;gap:14px;background:var(--paper2);border:1px solid var(--line);border-radius:5px;padding:15px 18px;}
+.loop .lp .lpn{flex:0 0 auto;width:27px;height:27px;border-radius:50%;background:var(--dark);color:#f1ebe0;font-size:12.5px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.loop .lp .lpt{font-size:15px;color:var(--ink);line-height:1.4;}
+.loop .lp .lpt b{font-weight:700;color:#15100c;}
+.loop .back{font-size:13px;color:var(--rust2);font-weight:700;text-align:center;align-self:center;margin-top:5px;background:var(--band);border:1px dashed var(--line2);border-radius:20px;padding:7px 18px;}
+
+/* 폭 증가 계층 스택 */
+.stack{display:flex;flex-direction:column;gap:12px;align-items:center;}
+.stack .sb{border-radius:5px;padding:16px 22px;color:#fff;text-align:left;}
+.stack .sb .sh{font-size:16px;font-weight:700;}
+.stack .sb .sd{font-size:13px;opacity:.92;margin-top:3px;line-height:1.45;}
+.stack .s1{width:56%;background:#9c440f;}.stack .s2{width:70%;background:#b35a26;}
+.stack .s3{width:84%;background:#c47a45;}.stack .s4{width:98%;background:#caa06e;color:#2a1d12;}
+
+/* 분기 흐름(검증/판정) */
+.veri{display:flex;flex-direction:column;gap:11px;}
+.veri .vrow{display:flex;align-items:center;gap:13px;}
+.veri .vbox{flex:1;background:var(--paper2);border:1px solid var(--line);border-radius:5px;padding:15px 18px;}
+.veri .vbox .vt{font-size:15px;font-weight:700;color:#15100c;}
+.veri .vbox p{font-size:13.5px;color:var(--ink2);line-height:1.5;margin-top:3px;}
+.veri .vbox.fail{background:#2a1812;border-color:#2a1812;}
+.veri .vbox.fail .vt{color:#ffd9bb;}.veri .vbox.fail p{color:#d3c6b8;}
+.veri .arr{color:var(--rust);font-size:18px;font-weight:700;flex:0 0 auto;}
+
+/* 가로 단계(좌→우) */
+.steps{display:flex;align-items:stretch;}
+.steps .st{flex:1;padding:0 18px;position:relative;}
+.steps .st:not(:last-child)::after{content:"›";position:absolute;right:-7px;top:15px;color:var(--rust);font-size:24px;font-weight:700;}
+.steps .st .sn{font-size:12px;font-weight:700;color:var(--rust);letter-spacing:.5px;margin-bottom:7px;}
+.steps .st .sh{font-size:16.5px;font-weight:700;color:#15100c;margin-bottom:7px;}
+.steps .st p{font-size:14.5px;line-height:1.58;color:var(--ink2);}
+
+/* 단계 사이 데이터 릴레이 바 */
+.relay{display:flex;align-items:stretch;gap:9px;}
+.relay .rc{flex:1;background:var(--band);border:1px solid var(--line2);border-radius:5px;padding:13px 12px;text-align:center;display:flex;flex-direction:column;justify-content:center;}
+.relay .rc .rk{font-size:11px;font-weight:700;color:var(--rust2);letter-spacing:.5px;margin-bottom:5px;}
+.relay .rc .rv{font-size:14.5px;font-weight:700;color:#15100c;}
+.relay .ra{display:flex;align-items:center;color:var(--rust);font-size:17px;font-weight:700;}
+
+/* 영역 카드(3열) */
+.domain{flex:1;background:var(--paper2);border:1px solid var(--line);border-top:3px solid var(--rust);border-radius:5px;padding:18px 19px;display:flex;flex-direction:column;}
+.domain .dh{font-size:17.5px;font-weight:700;color:#15100c;margin-bottom:6px;}
+.domain .dh span{font-size:12px;font-weight:600;color:var(--muted);margin-left:7px;}
+.dl{list-style:none;display:flex;flex-direction:column;flex:1;justify-content:space-around;padding-top:4px;}
+.dl li{position:relative;padding-left:16px;font-size:14.5px;line-height:1.55;color:var(--ink2);}
+.dl li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;background:var(--rust);border-radius:1px;}
+.dl li b{color:var(--rust2);font-weight:700;margin-right:5px;}
+
+/* 인용(좌측 빈 중단 채울 때) */
+.pull{border-left:3px solid var(--rust);padding:6px 0 6px 20px;font-family:"Noto Serif KR",serif;font-size:19.5px;font-weight:600;color:#15100c;line-height:1.5;}
+.pull span{display:block;font-family:Pretendard,sans-serif;font-size:14px;font-weight:400;color:var(--ink2);line-height:1.65;margin-top:11px;}
+
+/* 수치 강조 */
+.stats{display:flex;gap:16px;margin-top:8px;}
+.stat{flex:1;text-align:center;background:var(--paper2);border:1px solid var(--line);border-radius:5px;padding:16px 12px;}
+.stat .sv{font-family:"Noto Serif KR",serif;font-size:28px;font-weight:700;color:var(--rust2);line-height:1;}
+.stat .sl{font-size:13px;color:var(--ink2);margin-top:7px;line-height:1.4;}
+
+/* 다크 표지/마무리 */
+.slide.dark{background:var(--dark);color:#f1ebe0;}
+.slide.dark .hdr{background:transparent;border-bottom:1px solid rgba(255,255,255,.1);}
+.dwrap{position:absolute;inset:44px 0 0;display:flex;flex-direction:column;justify-content:center;padding:0 80px;}
+.dwrap .eye{font-size:13px;font-weight:600;letter-spacing:3px;color:var(--gold);margin-bottom:20px;text-transform:uppercase;}
+.dwrap h1{font-family:"Noto Serif KR",serif;font-weight:700;font-size:56px;line-height:1.16;color:#fdfbf6;letter-spacing:-1px;}
+.dwrap h1 .ac{color:var(--rust);}
+.dwrap .ds{font-size:19px;color:#c6bbac;font-weight:400;margin-top:20px;line-height:1.65;max-width:900px;}
+.dwrap .den{font-family:"Noto Serif KR",serif;font-size:17px;font-weight:500;letter-spacing:5px;color:rgba(255,255,255,.14);margin-top:16px;text-transform:uppercase;}
+.dmeta{position:absolute;left:80px;right:80px;bottom:52px;display:flex;justify-content:space-between;align-items:flex-end;border-top:1px solid rgba(255,255,255,.14);padding-top:18px;}
+.dmeta .who{font-size:14.5px;color:#e6ddd0;font-weight:600;}
+.dmeta .who span{display:block;font-size:12px;color:var(--muted);font-weight:400;margin-top:3px;}
+.dmeta .topic{font-size:13px;color:#c6bbac;text-align:right;line-height:1.55;max-width:520px;}
+.dmeta .topic b{color:var(--gold);font-weight:600;}
+.recap{position:absolute;inset:44px 0 0;display:flex;flex-direction:column;justify-content:center;padding:0 80px;}
+.recap .eye{font-size:13px;font-weight:600;letter-spacing:3px;color:var(--gold);margin-bottom:16px;}
+.recap h1{font-family:"Noto Serif KR",serif;font-size:40px;font-weight:700;color:#fdfbf6;line-height:1.3;margin-bottom:30px;}
+.recap .ritems{display:flex;flex-direction:column;gap:18px;max-width:960px;}
+.recap .ri{display:flex;gap:16px;align-items:baseline;}
+.recap .ri .rn{font-family:"Noto Serif KR",serif;color:var(--rust);font-size:19px;font-weight:700;flex:0 0 auto;}
+.recap .ri p{font-size:16.5px;color:#d8cdbe;line-height:1.62;}
+.recap .ri p b{color:#fdfbf6;font-weight:700;}
+
+/* === 강의 도구: 편집 · PDF · 발표 (인쇄/발표 시 자동 숨김) === */
+.tool{position:fixed;top:12px;right:12px;z-index:9999;display:flex;gap:6px;font-family:Pretendard,sans-serif;}
+.tool button{font-size:12px;font-weight:700;padding:7px 12px;border-radius:6px;border:1px solid var(--line2);background:#fffdf8;color:#3a322a;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.18);}
+.tool button:hover{background:var(--band);}
+.tool button.on{background:var(--rust);color:#fff;border-color:var(--rust);}
+body.editing .slide{outline:2px dashed rgba(191,87,29,.45);outline-offset:-2px;}
+body.presenting{overflow:hidden;background:#0c0907;}
+body.presenting .deck{display:block;padding:0;gap:0;margin:0;}
+body.presenting .slide{display:none!important;}
+body.presenting .slide.present-current{display:block!important;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(var(--ps,1));box-shadow:0 0 70px rgba(0,0,0,.6);}
+.pnav{position:fixed;bottom:14px;left:0;right:0;text-align:center;color:rgba(255,255,255,.55);font-size:13px;font-family:Pretendard,sans-serif;z-index:9999;display:none;}
+body.presenting .pnav{display:block;}
+@page{size:1280px 720px;margin:0;}
+@media print{
+  html,body{margin:0;padding:0;background:#fff;width:1280px;}
+  .tool,.pnav{display:none!important;}
+  .deck{display:block;gap:0;padding:0;margin:0;}
+  .slide{margin:0;box-shadow:none;page-break-after:always;break-after:page;}
+  .slide:last-child{page-break-after:auto;break-after:auto;}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+}
+</style>
+</head>
+<body>
+<div class="tool">
+  <button id="btnEdit">편집</button>
+  <button id="btnSave">저장(HTML)</button>
+  <button id="btnPdf">PDF</button>
+  <button id="btnPlay">발표</button>
+</div>
+<div class="pnav"></div>
+<div class="deck">
+
+<!-- ===== 표지 (다크) ===== -->
+<section class="slide dark">
+  <div class="hdr"><div class="ht">강의 제목<span>ENGLISH SUBTITLE</span></div><div class="hr">기관 · 날짜</div></div>
+  <div class="dwrap">
+    <div class="eye">대상 · 형식 · 시간</div>
+    <h1>주제 한 줄<br><span class="ac">핵심어</span>, 보조 구절</h1>
+    <div class="ds">이 강의가 무엇을 다루는지 한두 문장으로, 비유 없이 사실대로 설명합니다.</div>
+    <div class="den">English Tagline</div>
+  </div>
+  <div class="dmeta">
+    <div class="who">강사명<span>소속 · 직함</span></div>
+    <div class="topic">부가 정보 한 줄<br><b>형식 · 일정</b></div>
+  </div>
+</section>
+
+<!-- ===== 커리큘럼 표 ===== -->
+<section class="slide">
+  <div class="hdr"><div class="ht">강의 제목<span>ENGLISH SUBTITLE</span></div><div class="hr">CURRICULUM</div></div>
+  <div class="stage">
+    <div class="crumb">과정 안내</div>
+    <h2 class="atitle"><span class="lbl">[과정 안내]</span> 커리큘럼 <span class="sub">— 부제</span></h2>
+    <div class="titlerule"></div>
+    <div class="body colflow" style="padding-top:14px;">
+      <table class="grid tight">
+        <tr><th style="width:108px;">시간</th><th style="width:200px;">블록</th><th>세부 내용</th><th style="width:150px;">도구</th></tr>
+        <tr class="grp"><td colspan="4">1부 — 묶음 제목 (시간)</td></tr>
+        <tr><td>00:00–00:15</td><td><b>블록명</b></td><td>한 줄 설명을 합니다체로.</td><td>도구</td></tr>
+        <tr><td>00:15–00:35</td><td><b>블록명</b></td><td>한 줄 설명.</td><td>도구</td></tr>
+        <tr class="grp"><td colspan="4">2부 — 묶음 제목 (시간)</td></tr>
+        <tr><td>00:35–01:00</td><td><b>블록명</b></td><td>한 줄 설명.</td><td>도구</td></tr>
+      </table>
+      <div class="note"><div class="nl">과정 목표</div><p>이 과정이 무엇을 목표로 하는지 사실대로 한두 문장.</p></div>
+    </div>
+  </div>
+  <div class="pageno">02</div>
+</section>
+
+<!-- ===== 본문 A: 설명문 + 번호 개념 + 도식(2단) ===== -->
+<section class="slide">
+  <div class="hdr"><div class="ht">강의 제목<span>ENGLISH SUBTITLE</span></div><div class="hr">1부 · 구분</div></div>
+  <div class="stage">
+    <div class="crumb">1부 · 구분</div>
+    <h2 class="atitle"><span class="lbl">[구분]</span> 주제 <span class="sub">— 부제</span></h2>
+    <div class="titlerule"></div>
+    <div class="body split-l" style="padding-top:18px;">
+      <div class="colflow">
+        <p class="lead" style="margin-bottom:14px;">도입 설명을 합니다체로 2~3문장. 비개발자도 이해하도록 전문어는 풀어서, 구체 예시를 곁들입니다.</p>
+        <div class="concepts fill">
+          <div class="concept"><div class="no">1</div><div class="cbody"><div class="cn">개념 이름<span class="en">EN</span></div>
+            <p>정의를 2~3줄로. <b>핵심어</b>만 굵게. 가능하면 “예 — …” 한 줄을 덧붙여 구체화합니다.</p></div></div>
+          <div class="concept"><div class="no">2</div><div class="cbody"><div class="cn">개념 이름<span class="en">EN</span></div>
+            <p>정의 2~3줄.</p></div></div>
+        </div>
+      </div>
+      <div class="figwrap">
+        <div class="figcap">도식 제목 — 부제</div>
+        <div class="layer2">
+          <div class="lay top"><div class="lt">상위 라벨</div><div class="lh">상위 항목</div><p>설명 한 줄</p></div>
+          <div class="conn">▲ 관계 한 줄</div>
+          <div class="lay bot"><div class="lt">하위 라벨</div><div class="lh">하위 항목</div><p>설명 한 줄</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="note"><div class="nl">정리</div><p>이 슬라이드의 결론을 사실 진술로. 슬로건·아포리즘 금지.</p></div>
+  </div>
+  <div class="pageno">03</div>
+</section>
+
+<!-- ===== 본문 B: 번호 개념 4개(2열) ===== -->
+<section class="slide">
+  <div class="hdr"><div class="ht">강의 제목<span>ENGLISH SUBTITLE</span></div><div class="hr">1부 · 구분</div></div>
+  <div class="stage">
+    <div class="crumb">1부 · 구분</div>
+    <h2 class="atitle"><span class="lbl">[구분]</span> 주제 <span class="sub">— 네 가지 항목</span></h2>
+    <div class="titlerule"></div>
+    <div class="body split" style="padding-top:16px;">
+      <div class="concepts fill">
+        <div class="concept"><div class="no">1</div><div class="cbody"><div class="cn">항목</div><p>정의 2~3줄.<br><span style="color:var(--rust2)">예 — 구체 사례.</span></p></div></div>
+        <div class="concept"><div class="no">2</div><div class="cbody"><div class="cn">항목</div><p>정의 2~3줄.<br><span style="color:var(--rust2)">예 — 구체 사례.</span></p></div></div>
+      </div>
+      <div class="concepts fill">
+        <div class="concept"><div class="no">3</div><div class="cbody"><div class="cn">항목</div><p>정의 2~3줄.<br><span style="color:var(--rust2)">예 — 구체 사례.</span></p></div></div>
+        <div class="concept"><div class="no">4</div><div class="cbody"><div class="cn">항목</div><p>정의 2~3줄.<br><span style="color:var(--rust2)">예 — 구체 사례.</span></p></div></div>
+      </div>
+    </div>
+    <div class="note"><div class="nl">정리</div><p>결론 한두 문장.</p></div>
+  </div>
+  <div class="pageno">04</div>
+</section>
+
+<!-- ===== 본문 C: 표 ===== -->
+<section class="slide">
+  <div class="hdr"><div class="ht">강의 제목<span>ENGLISH SUBTITLE</span></div><div class="hr">1부 · 구분</div></div>
+  <div class="stage">
+    <div class="crumb">1부 · 구분</div>
+    <h2 class="atitle"><span class="lbl">[구분]</span> 주제 <span class="sub">— 비교 표</span></h2>
+    <div class="titlerule"></div>
+    <div class="body colflow" style="padding-top:16px;">
+      <p class="lead" style="margin-bottom:13px;">표가 무엇을 비교하는지 한두 문장.</p>
+      <table class="grid">
+        <tr><th style="width:180px;">항목</th><th style="width:120px;">속성</th><th>설명</th><th style="width:130px;">분류</th></tr>
+        <tr><td><b>항목</b></td><td>값</td><td>설명 한 줄</td><td><span class="pill soft">분류 A</span></td></tr>
+        <tr><td><b>항목</b></td><td>값</td><td>설명 한 줄</td><td><span class="pill force">분류 B</span></td></tr>
+      </table>
+      <div class="note"><div class="nl">정리</div><p>결론.</p></div>
+    </div>
+  </div>
+  <div class="pageno">05</div>
+</section>
+
+<!-- ===== 본문 D: 가로 단계 + 데이터 릴레이 ===== -->
+<section class="slide">
+  <div class="hdr"><div class="ht">강의 제목<span>ENGLISH SUBTITLE</span></div><div class="hr">2부 · 구분</div></div>
+  <div class="stage">
+    <div class="crumb">2부 · 구분</div>
+    <h2 class="atitle"><span class="lbl">[구분]</span> 주제 <span class="sub">— 단계 흐름</span></h2>
+    <div class="titlerule"></div>
+    <div class="body colflow" style="padding-top:18px;">
+      <p class="lead" style="margin-bottom:8px;">흐름이 무엇인지 한두 문장.</p>
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:space-around;padding:8px 0;">
+        <div class="steps">
+          <div class="st"><div class="sn">① 단계</div><div class="sh">단계명</div><p>설명 한두 줄.</p></div>
+          <div class="st"><div class="sn">② 단계</div><div class="sh">단계명</div><p>설명 한두 줄.</p></div>
+          <div class="st"><div class="sn">③ 단계</div><div class="sh">단계명</div><p>설명 한두 줄.</p></div>
+          <div class="st"><div class="sn">④ 단계</div><div class="sh">단계명</div><p>설명 한두 줄.</p></div>
+        </div>
+        <div>
+          <div class="figcap" style="margin-bottom:12px;">단계 사이로 넘어가는 산출물</div>
+          <div class="relay">
+            <div class="rc"><div class="rk">A 후</div><div class="rv">산출물</div></div><div class="ra">›</div>
+            <div class="rc"><div class="rk">B 후</div><div class="rv">산출물</div></div><div class="ra">›</div>
+            <div class="rc"><div class="rk">C 후</div><div class="rv">산출물</div></div><div class="ra">›</div>
+            <div class="rc"><div class="rk">최종</div><div class="rv">산출물</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="note"><div class="nl">정리</div><p>결론.</p></div>
+    </div>
+  </div>
+  <div class="pageno">06</div>
+</section>
+
+<!-- ===== 본문 E: 영역 카드 3열 ===== -->
+<section class="slide">
+  <div class="hdr"><div class="ht">강의 제목<span>ENGLISH SUBTITLE</span></div><div class="hr">2부 · 구분</div></div>
+  <div class="stage">
+    <div class="crumb">2부 · 구분</div>
+    <h2 class="atitle"><span class="lbl">[적용]</span> 주제 <span class="sub">— 영역별</span></h2>
+    <div class="titlerule"></div>
+    <div class="body colflow" style="padding-top:16px;">
+      <p class="lead" style="margin-bottom:6px;">세 영역에 어떻게 적용되는지 한두 문장.</p>
+      <div style="flex:1;display:flex;gap:18px;align-items:stretch;padding:10px 0;">
+        <div class="domain"><div class="dh">영역 A <span>부제</span></div><ul class="dl"><li><b>구분</b> 항목</li><li><b>구분</b> 항목</li><li><b>구분</b> 항목</li></ul></div>
+        <div class="domain"><div class="dh">영역 B <span>부제</span></div><ul class="dl"><li><b>구분</b> 항목</li><li><b>구분</b> 항목</li><li><b>구분</b> 항목</li></ul></div>
+        <div class="domain"><div class="dh">영역 C <span>부제</span></div><ul class="dl"><li><b>구분</b> 항목</li><li><b>구분</b> 항목</li><li><b>구분</b> 항목</li></ul></div>
+      </div>
+      <div class="note"><div class="nl">공통점</div><p>세 영역의 공통 구조를 한두 문장.</p></div>
+    </div>
+  </div>
+  <div class="pageno">07</div>
+</section>
+
+<!-- ===== 강의 요약 (다크) ===== -->
+<section class="slide dark">
+  <div class="hdr"><div class="ht">강의 제목<span>ENGLISH SUBTITLE</span></div><div class="hr">강의 요약 · Q &amp; A</div></div>
+  <div class="recap">
+    <div class="eye">마무리</div>
+    <h1>강의 요약</h1>
+    <div class="ritems">
+      <div class="ri"><div class="rn">01</div><p>핵심 1을 사실 진술로. <b>핵심어</b>만 굵게.</p></div>
+      <div class="ri"><div class="rn">02</div><p>핵심 2.</p></div>
+      <div class="ri"><div class="rn">03</div><p>핵심 3.</p></div>
+    </div>
+  </div>
+  <div class="dmeta">
+    <div class="who">강사명<span>소속 · 직함</span></div>
+    <div class="topic">질의응답<br><b>형식 · 일정</b></div>
+  </div>
+  <div class="pageno">08</div>
+</section>
+
+</div>
+<script>
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var editing=false, pidx=0;
+  var bEdit=document.getElementById('btnEdit'), bSave=document.getElementById('btnSave'),
+      bPdf=document.getElementById('btnPdf'), bPlay=document.getElementById('btnPlay'),
+      nav=document.querySelector('.pnav');
+  function setEdit(v){editing=v;document.body.classList.toggle('editing',v);
+    slides.forEach(function(s){s.contentEditable=v;});bEdit.classList.toggle('on',v);bEdit.textContent=v?'편집 끝':'편집';}
+  bEdit.onclick=function(){setEdit(!editing);};
+  bPdf.onclick=function(){window.print();};
+  bSave.onclick=function(){
+    var wasEdit=editing; if(editing)setEdit(false);
+    var clone=document.documentElement.cloneNode(true);
+    clone.querySelectorAll('.slide').forEach(function(s){s.removeAttribute('contenteditable');s.classList.remove('present-current');});
+    clone.querySelector('body').classList.remove('editing','presenting');
+    var html='<!doctype html>\n'+clone.outerHTML;
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));
+    a.download=(document.title.replace(/\s+/g,'_')||'lecture')+'_편집본.html';
+    document.body.appendChild(a);a.click();a.remove();
+    if(wasEdit)setEdit(true);
+  };
+  function fit(){var s=Math.min(window.innerWidth/1280,window.innerHeight/720);
+    var cur=document.querySelector('.slide.present-current');if(cur)cur.style.setProperty('--ps',s);}
+  function show(i){pidx=(i+slides.length)%slides.length;
+    slides.forEach(function(s){s.classList.remove('present-current');});
+    slides[pidx].classList.add('present-current');fit();
+    nav.textContent=(pidx+1)+' / '+slides.length+'   ·   ← →  이동,  Esc  종료';}
+  function enter(){if(editing)setEdit(false);document.body.classList.add('presenting');show(pidx);
+    if(document.documentElement.requestFullscreen)document.documentElement.requestFullscreen().catch(function(){});}
+  function exit(){document.body.classList.remove('presenting');
+    slides.forEach(function(s){s.classList.remove('present-current');s.style.removeProperty('--ps');});
+    if(document.fullscreenElement)document.exitFullscreen().catch(function(){});}
+  bPlay.onclick=enter;
+  window.addEventListener('resize',function(){if(document.body.classList.contains('presenting'))fit();});
+  document.addEventListener('keydown',function(e){
+    if(!document.body.classList.contains('presenting'))return;
+    if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();show(pidx+1);}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();show(pidx-1);}
+    else if(e.key==='Escape'){exit();}
+  });
+  document.addEventListener('click',function(e){
+    if(document.body.classList.contains('presenting')&&!editing){
+      var cur=document.querySelector('.slide.present-current');
+      if(cur&&cur.contains(e.target))show(pidx+1);
+    }
+  });
+})();
+</script>
+</body>
+</html>
